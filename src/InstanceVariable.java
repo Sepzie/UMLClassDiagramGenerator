@@ -22,11 +22,15 @@ public class InstanceVariable {
         this.name = name;
     }
 
+    public InstanceVariable() {
+
+    }
+
     public Visibility getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(Visibility visibility) {
+    public void setVisibility(final Visibility visibility) {
         this.visibility = visibility;
     }
 
@@ -34,7 +38,7 @@ public class InstanceVariable {
         return isStatic;
     }
 
-    public void setStatic(boolean aStatic) {
+    public void setStatic(final boolean aStatic) {
         isStatic = aStatic;
     }
 
@@ -42,7 +46,7 @@ public class InstanceVariable {
         return isFinal;
     }
 
-    public void setFinal(boolean aFinal) {
+    public void setFinal(final boolean aFinal) {
         isFinal = aFinal;
     }
 
@@ -60,5 +64,16 @@ public class InstanceVariable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "InstanceVariable{"
+                + "visibility=" + visibility
+                + ", isStatic=" + isStatic
+                + ", isFinal=" + isFinal
+                + ", type='" + type + '\''
+                + ", name='" + name + '\''
+                + '}';
     }
 }
