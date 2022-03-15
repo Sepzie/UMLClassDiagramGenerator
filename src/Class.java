@@ -1,51 +1,19 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Class {
-    private Visibility visibility;
-    private String name;
+public class Class extends JavaElement {
     private boolean isAbstract;
     private boolean isSubclass;
     private String superName;
     private List<InstanceVariable> instanceVariables;
 
-    public Class(final Visibility visibility, final String name, final boolean isAbstract, final boolean isSubclass,
-                 final String superName, final List<InstanceVariable> instanceVariables) {
-        this.visibility = visibility;
-        this.name = name;
-        this.isAbstract = isAbstract;
-        this.isSubclass = isSubclass;
-        this.superName = superName;
-        this.instanceVariables = instanceVariables;
-    }
-
-
-    public Class(final String name) {
-        visibility = Visibility.DEFAULT;
-        this.name = name;
-        isAbstract = false;
-        isSubclass = false;
-        instanceVariables = new ArrayList<>();
-
-    }
 
     public Class() {
     }
 
-    public Visibility getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(final Visibility visibility) {
-        this.visibility = visibility;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
+    @Override
+    public Class fromSignature(String signature) {
+        return SignatureToObject.classFromSignature(signature);
     }
 
     public boolean isAbstract() {
@@ -68,7 +36,7 @@ public class Class {
         return isSubclass;
     }
 
-    public void setSubclass(boolean subclass) {
+    public void setSubclass(final boolean subclass) {
         isSubclass = subclass;
     }
 
@@ -76,19 +44,20 @@ public class Class {
         return superName;
     }
 
-    public void setSuperName(String superName) {
+    public void setSuperName(final String superName) {
         this.superName = superName;
     }
 
     @Override
     public String toString() {
         return "Class{"
-                + "visibility=" + visibility
-                + ", name='" + name + '\''
-                + ", isAbstract=" + isAbstract
+                + "isAbstract=" + isAbstract
                 + ", isSubclass=" + isSubclass
                 + ", superName='" + superName + '\''
                 + ", instanceVariables=" + instanceVariables
+                + ", visibility=" + visibility
+                + ", name='" + name + '\''
+                + ", isFinal=" + isFinal
                 + '}';
     }
 }

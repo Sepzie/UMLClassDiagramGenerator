@@ -1,7 +1,7 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class SignatureToObject {
+public final class SignatureToObject {
     private static final String PUBLIC = "public";
     private static final String PROTECTED = "protected";
     private static final String PRIVATE = "private";
@@ -56,6 +56,7 @@ public abstract class SignatureToObject {
         newClass.setName(classNameMatcher.group());
         newClass.setAbstract(Pattern.matches(tokenExistsPattern(ABSTRACT), signature));
         newClass.setVisibility(visibilityFromSignature(signature));
+        newClass.setFinal(Pattern.matches(tokenExistsPattern(FINAL), signature));
         newClass.setSubclass(Pattern.matches(tokenExistsPattern(EXTENDS), signature));
         if (newClass.isSubclass()) {
             final Pattern superNamePattern = Pattern.compile(whatsAfterTokenPattern(EXTENDS));
@@ -75,7 +76,7 @@ public abstract class SignatureToObject {
             throw new IllegalArgumentException("Could not find instance variable type.");
         }
         instanceVariable.setType(typeAndNameMatcher.group());
-        if(!typeAndNameMatcher.find()) {
+        if (!typeAndNameMatcher.find()) {
             throw new IllegalArgumentException("Could not find instance variable name.");
         }
         instanceVariable.setName(typeAndNameMatcher.group());
@@ -86,6 +87,33 @@ public abstract class SignatureToObject {
         return instanceVariable;
     }
 
+    public static Method methodFromSignature(final String signature) {
+        final InstanceVariable temp = instanceVariableFromSignature(signature);
+        final Method method = new Method(temp);
+        final String inParenthesisPattern = "(?<=\\().*(?=\\))";
+        final Pattern parameterStringPattern = Pattern.compile(inParenthesisPattern);
+        final Matcher parameterStringMatcher = parameterStringPattern.matcher(signature);
+        if (!parameterStringMatcher.find()) {
+            throw new IllegalArgumentException("No parameters found.");
+        }
+        String parameterString = parameterStringMatcher.group();
+
+        final String patternString = firstThatIsNotTokenPattern(new String[]{FINAL});
+        final Pattern parameterPattern = Pattern.compile(patternString);
+        final Matcher parameterMatcher = parameterPattern.matcher(parameterString);
+        String parameterType;
+        String parameterName;
+        while (parameterMatcher.find()) {
+            parameterType = parameterMatcher.group();
+            if (!parameterMatcher.find()) {
+                throw new IllegalArgumentException("Found a parameter with a type and no name.");
+            }
+            parameterName = parameterMatcher.group();
+            method.addParameter(parameterType,parameterName);
+        }
+        return method;
+    }
+
 
     public static void main(final String[] args) {
         final String classSignature = "public abstract class SignatureToObject extends foo";
@@ -94,9 +122,13 @@ public abstract class SignatureToObject {
         InstanceVariable instanceVariable = instanceVariableFromSignature(instanceVariableSignature);
         System.out.println(newClass);
         System.out.println(instanceVariable);
+        Class myclass = new Class().fromSignature("private class foo");
+        System.out.println(myclass);
+        final String methodSignature = "public static void main(final String[] args, int number)";
+        final Method method = methodFromSignature(methodSignature);
+        System.out.println(method);
     }
 
     public static class NoClassSignatureFound extends IllegalArgumentException {
-
     }
 }
